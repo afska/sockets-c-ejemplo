@@ -1,4 +1,6 @@
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
 
@@ -30,7 +32,27 @@ int main(void) {
 	printf("Recibí una conexión en %d!!\n", cliente);
 	send(cliente, "Hola NetCat!", 13, 0);
 	send(cliente, ":)\n", 4, 0);
-	
-	for(;;);
+
+	//------------------------------
+
+	char* buffer = malloc(5);
+
+	int bytesRecibidos = recv(cliente, buffer, 4, MSG_WAITALL);
+	if (bytesRecibidos < 0) {
+		perror("El chabón se desconectó o bla.");
+		return 1;
+	}
+
+	buffer[bytesRecibidos] = '\0';
+	printf("Me llegaron %d bytes con %s", bytesRecibidos, buffer);
+
+	free(buffer);
+
+	// uint32_t tamaño;
+	// recv(cliente, &tamaño, 4, 0);
+
+	// char* buffer = malloc(tamaño);
+	// recv(cliente, buffer, tamaño, MSG_WAITALL);
+
 	return 0;
 }
