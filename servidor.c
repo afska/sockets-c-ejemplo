@@ -10,6 +10,9 @@ int main(void) {
 
 	int servidor = socket(AF_INET, SOCK_STREAM, 0);
 
+	int activado = 1;
+	setsockopt(servidor, SOL_SOCKET, SO_REUSEADDR, &activado, sizeof(activado));
+	
 	if (bind(servidor, (void*) &direcciónServidor, sizeof(direcciónServidor)) != 0) {
 		perror("Falló el bind");
 		return 1;
@@ -18,6 +21,16 @@ int main(void) {
 	printf("Estoy escuchando\n");
 	listen(servidor, 100);
 
+	//------------------------------
+
+	struct sockaddr_in direcciónCliente;
+	unsigned int len;
+	int cliente = accept(servidor, (void*) &direcciónCliente, &len);
+
+	printf("Recibí una conexión en %d!!\n", cliente);
+	send(cliente, "Hola NetCat!", 13, 0);
+	send(cliente, ":)\n", 4, 0);
+	
 	for(;;);
 	return 0;
 }
